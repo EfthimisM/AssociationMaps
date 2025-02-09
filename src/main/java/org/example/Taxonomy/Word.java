@@ -33,6 +33,10 @@ public class Word {
         return frequencies.size();
     }
 
+    public int getTotalFreq() {
+        return totalFreq;
+    }
+
     public void setValues(List<String> list){
         this.values = list;
     }

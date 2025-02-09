@@ -2,10 +2,7 @@ package org.example.Taxonomy;
 
 import mitos.stemmer.Stemmer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 public class Index {
@@ -305,8 +302,16 @@ public class Index {
             }
         }
         BigInteger result = binomialCoefficient(depth, tmp.size());
-        if(result.compareTo(BigInteger.valueOf((long) 1E6)) > 0){
+        if(result.compareTo(BigInteger.valueOf((long) 3E6)) > 0){
             System.out.println("TOO MANY SUBSETS STOPPING THE ALGORITHM");
+            try{
+                FileWriter writer = new FileWriter("Metrics.txt", true);
+                writer.write("ENDED PREEPMTIVLY \n");
+                writer.write("MAX DEPTH :" + depth + "\n");
+                writer.close();
+            }catch (Exception e){
+
+            }
             return Subset;
         }
 
@@ -353,8 +358,21 @@ public class Index {
         endTime = System.currentTimeMillis();
         System.out.println("Total execution time for search: " + (long) (endTime - startTime)/ 1000);
 
+
+        // check if the new subsets satisfy the support threshold
+        x.entrySet().removeIf(entry -> entry.getValue().getTotalFreq() < THRESHOLD);
+
         if(x.isEmpty()){
+            try{
+                FileWriter writer = new FileWriter("Metrics.txt", true);
+                writer.write("MAX DEPTH :" + depth + "\n");
+                writer.close();
+            }catch (Exception e){
+
+            }
+            System.out.println("MAX DEPTH :" + depth);
             return Subset;
+
         }else{
             x = Findsubsets(x, depth + 1, total);
         }

@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class VisualRestController {
@@ -26,7 +24,7 @@ public class VisualRestController {
     private static double support = 0;
     private static double confidence;
     private static int phrase_length = 0;
-    private static List<Rule> rules;
+    private static HashMap<String,Rule> rules;
 
     private static Index index;
 
@@ -38,44 +36,83 @@ public class VisualRestController {
         return content;
     }
 
+
+    // todo: remove duplicates
     public static void process(int i){
-        rules = new ArrayList<>();
-        index.setTHRESHOLD(support, phrase_length);
-        Map<String, Word> subSets = index.Findsubsets(index.getTerms(), 2, i);
-        if(subSets == null){
-            System.err.println("TOO MANY SUBSETS, PLEASE TRY A HIGHER THRESHOLD");
-            return;
-        }
-        for(Map.Entry<String, Word> entry : subSets.entrySet()){
+        rules = new HashMap<>();
 
-            //System.out.println("Set : " + entry.getValue().getValues());
-            List<List<String>> subsets = entry.getValue().getAllSubsets();
-            for(List<String> list : subsets){
-                double conf = index.getConfidence(list,entry.getValue().calculateSupport());
+        try{
+            FileWriter fileWriter = new FileWriter("Metrics.txt", true);
+            long startTime = System.currentTimeMillis();
 
-                List<String> opposite = new ArrayList<>();
+            fileWriter.write("- START APRIORI ALGORITHM\n");
+            index.setTHRESHOLD(support, phrase_length);
+            Map<String, Word> subSets = index.Findsubsets(index.getTerms(), 2, i);
+            long endTime = System.currentTimeMillis();
+            fileWriter.write("- END APRIORI ALGORITHM\n");
+            fileWriter.write("\t - TOTAL NUMBER OF SUBSETS: " + subSets.size() + "\n");
+            fileWriter.write("\t - TIME: " + (endTime - startTime) + "\n");
+            fileWriter.write("- START RULE EXTRACTION\n");
 
-                for(String string : entry.getValue().getValues()){
-                    if(!list.contains(string)){
-                        opposite.add(string);
-                    }
-                }
+            startTime = System.currentTimeMillis();
 
-
-                if(conf >= confidence){
-                    //System.out.println("RULE: " + list + " -> " + opposite + " = " + conf);
-                    if(!opposite.isEmpty()){
-                        Rule rule = new Rule(list,opposite,conf);
-                        rules.add(rule);
-                    }
-                }
-            }
-            // Add a threshold to the maximum number of rules we can return 
-            if(rules.size() > 10000){
-                System.out.println("TOO MANY RULES");
+            if(subSets == null){
+                System.err.println("TOO MANY SUBSETS, PLEASE TRY A HIGHER THRESHOLD");
                 return;
             }
+            for(Map.Entry<String, Word> entry : subSets.entrySet()){
+
+                System.out.println("_______________");
+                System.out.println(entry.getKey());
+
+                System.out.println("_______________");
+
+                List<String> subset = entry.getValue().getValues();
+                for(int k = 0; k< subset.size(); k++){
+
+                    List<String> first = new ArrayList<>();
+                    first.add(subset.get(k));
+                    int support1 = index.getSuppoort(first);
+
+                    for(int l = 0; l< subset.size(); l++){
+                        List<String> second = new ArrayList<>();
+                        if(l!=k){
+
+                            second.add(subset.get(l));
+                            second.add(subset.get(k));
+                            int support2 = index.getSuppoort(second);
+                            double conf =  ((double)support2 / (double)support1);
+                            if(conf >= confidence){
+                                second.remove(second.size()-1);
+                                try{
+                                    String key = first.get(0) + second.get(0);
+                                    Rule rule = new Rule(first,second,conf);
+                                    rules.put(key, rule);
+                                    System.out.println("New rule: " + first + " -> " + subset.get(l) + " CONFIDENCE: " + conf);
+                                }catch(Exception e){}
+                            }
+                        }
+                    }
+                }
+
+
+                // Add a threshold to the maximum number of rules we can return
+                if(rules.size() > 10000){
+                    System.out.println("TOO MANY RULES");
+                    return;
+                }
+            }
+            endTime = System.currentTimeMillis();
+            fileWriter.write("- END RULE EXTRACTION\n");
+            fileWriter.write("\t - TIME: " + (long) (endTime - startTime) + "\n");
+            fileWriter.write("\t - TOTAL RULES:" + rules.size() + "\n");
+            fileWriter.close();
+
+        }catch(Exception e){
+            e.printStackTrace();
         }
+
+
     }
 
 
@@ -120,9 +157,9 @@ public class VisualRestController {
     }
     private static void initFrame(){
         nodes = new HashMap<>();
-        for(Rule rule : rules){
-            System.out.println(rule.getList() + "->" + rule.getOpposite() + "=" + rule.getConfidence());
-            for(String A : rule.getList()) {
+        for(Map.Entry<String, Rule>entry : rules.entrySet()){
+            System.out.println(entry.getValue().getList() + "->" + entry.getValue().getOpposite() + "=" + entry.getValue().getConfidence());
+            for(String A : entry.getValue().getList()) {
                 Node tmp;
                 if (!nodes.containsKey(A)) {
                     ArrayList<String> c = new ArrayList<>();
@@ -132,7 +169,7 @@ public class VisualRestController {
                 } else {
                     tmp = nodes.get(A);
                 }
-                for (String B : rule.getOpposite()) {
+                for (String B : entry.getValue().getOpposite()) {
                     Node tmp2;
                     if (!nodes.containsKey(B)) {
                         ArrayList<String> c = new ArrayList<>();
@@ -143,7 +180,7 @@ public class VisualRestController {
                         tmp2 = nodes.get(B);
                     }
                     tmp2.addParent(tmp);
-                    tmp.addChild(tmp2, rule.getConfidence());
+                    tmp.addChild(tmp2, entry.getValue().getConfidence());
                 }
             }
 
@@ -163,54 +200,75 @@ public class VisualRestController {
         System.out.println("Confidence: " + confidence);
         System.out.println("Phrase Length: " + phrase_length);
 
-        File file = new File(path);
-        int i = 0 ;
-        System.out.println("Tokenizing and Stemming: ");
-        for (File fileEntry : file.listFiles()) {
-            if (fileEntry.isDirectory()) {
-                System.out.println(fileEntry.getAbsolutePath());
-            } else {
-                try {
-                    String content = readFileAsString(fileEntry.getAbsolutePath());
-                    String[] tokens = content.split("\\s+");
-                    // phrase length determins the number of words that make a term
-                    index.addCollection(tokens, i, phrase_length);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                i++;
-            }
-        }
-
-        I = i;
-        System.out.println("DONE FOR: " + I);
-
-        index.setTHRESHOLD(support, phrase_length);
-        process(I);
-        initFrame();
-
-        graphDt = new GraphDt();
-
-        for(Map.Entry<String, Node> entry : nodes.entrySet()){
-            String label = "";
-            for(String str : entry.getValue().getTerms()){
-                if(entry.getValue().getTerms().indexOf(str) == entry.getValue().getTerms().size() - 1){
-                    label += str;
-                }else{
-                    label += str + ", ";
+        // create a file to put all the time metrics
+        try {
+            FileWriter output = new FileWriter("Metrics.txt");
+            long startTime = System.currentTimeMillis();
+            File file = new File(path);
+            int i = 0 ;
+            System.out.println("Tokenizing and Stemming: ");
+            long tokenize = System.currentTimeMillis();
+            output.write("TIMING INPUT & INDEXING & TOKENIZATION & STEMMING\n");
+            for (File fileEntry : file.listFiles()) {
+                if (fileEntry.isDirectory()) {
+                    System.out.println(fileEntry.getAbsolutePath());
+                } else {
+                    try {
+                        String content = readFileAsString(fileEntry.getAbsolutePath());
+                        String[] tokens = content.split("\\s+");
+                        // phrase length determins the number of words that make a term
+                        index.addCollection(tokens, i, phrase_length);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    i++;
                 }
             }
-            graphDt.addNode(entry.getKey(), label, entry.getValue().getLevel());
-        }
 
-        for(Map.Entry<String, Node> entry : nodes.entrySet()){
-            for(Map.Entry<Node, Double> node : entry.getValue().getchildren().entrySet()){
-                Edge edge = new Edge(entry.getKey(), node.getKey().getValue(), node.getValue());
-                graphDt.addEdge(edge);
+            I = i;
+            System.out.println("DONE FOR: " + I);
+            long stopTime = System.currentTimeMillis();
+            output.write("- INPUT DONE FOR: " + I + " DOCUMENTS \n");
+            output.write(" TOTAL TIME: " +(long) (stopTime - startTime) + " SECONDS \n");
+
+
+            index.setTHRESHOLD(support, phrase_length);
+            output.write(" FOUND " + index.getTerms().size() + " UNIQUE TERMS\n START APRIORI ALGORITHM\n ");
+            output.close();
+
+            process(I);
+            initFrame();
+
+            graphDt = new GraphDt();
+
+            for(Map.Entry<String, Node> entry : nodes.entrySet()){
+                String label = "";
+                for(String str : entry.getValue().getTerms()){
+                    if(entry.getValue().getTerms().indexOf(str) == entry.getValue().getTerms().size() - 1){
+                        label += str;
+                    }else{
+                        label += str + ", ";
+                    }
+                }
+                graphDt.addNode(entry.getKey(), label, entry.getValue().getLevel());
             }
+
+            for(Map.Entry<String, Node> entry : nodes.entrySet()){
+                for(Map.Entry<Node, Double> node : entry.getValue().getchildren().entrySet()){
+                    Edge edge = new Edge(entry.getKey(), node.getKey().getValue(), node.getValue());
+                    graphDt.addEdge(edge);
+                }
+            }
+
+            System.out.println("DONE FOR: " + I);
+            FileWriter writer = new FileWriter("Metrics.txt", true);
+            long endTime = System.currentTimeMillis();
+            writer.write("Total time to execute the program: " + (long) (endTime - startTime)/ 1000);
+            writer.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        // todo: Put graphDT to the response
-        System.out.println("DONE FOR: " + I);
         return ResponseEntity.ok(graphDt);
 
     }
