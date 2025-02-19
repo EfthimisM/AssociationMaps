@@ -86,7 +86,7 @@ public class VisualRestController {
                                 second.remove(second.size()-1);
                                 try{
                                     String key = first.get(0) + second.get(0);
-                                    Rule rule = new Rule(first,second,conf);
+                                    Rule rule = new Rule(first,second,conf,support2);
                                     rules.put(key, rule);
                                     System.out.println("New rule: " + first + " -> " + subset.get(l) + " CONFIDENCE: " + conf);
                                 }catch(Exception e){}
@@ -180,7 +180,7 @@ public class VisualRestController {
                         tmp2 = nodes.get(B);
                     }
                     tmp2.addParent(tmp);
-                    tmp.addChild(tmp2, entry.getValue().getConfidence());
+                    tmp.addChild(tmp2, entry.getValue().getConfidence(), entry.getValue().getSupport());
                 }
             }
 
@@ -254,8 +254,8 @@ public class VisualRestController {
             }
 
             for(Map.Entry<String, Node> entry : nodes.entrySet()){
-                for(Map.Entry<Node, Double> node : entry.getValue().getchildren().entrySet()){
-                    Edge edge = new Edge(entry.getKey(), node.getKey().getValue(), node.getValue());
+                for(Map.Entry<Node, List<Double>> node : entry.getValue().getchildren().entrySet()){
+                    Edge edge = new Edge(entry.getKey(), node.getKey().getValue(), node.getValue().get(0), node.getValue().get(1));
                     graphDt.addEdge(edge);
                 }
             }

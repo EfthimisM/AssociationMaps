@@ -11,10 +11,14 @@ public class Edge {
 
     @JsonProperty("confidence")
     private double confidence;
-    public Edge(String from, String to, double conf){
+
+    @JsonProperty("support")
+    private double support;
+    public Edge(String from, String to, double conf, double support){
         this.to = to;
         this.from = from;
         this.confidence = conf;
+        this.support = support;
     }
 
     public double getConfidence() {
@@ -27,5 +31,9 @@ public class Edge {
 
     public String getTo() {
         return to;
+    }
+
+    public double getSupport() {
+        return support;
     }
 }

@@ -19,7 +19,7 @@ public class Index {
 
     public static String tokenize(String word) {
         char[] punctuation = { ',', '?', '!', ';', ':', '\'', '\"', ')', ']', '}', '(', '[', '{', '<', '>', '/',
-                '\\', '=', '+', '*', '~', '\t','|','^','_','#','$','%','&','\n'};
+                '\\', '=', '+', '*', '~', '\t','|','^','_','#','$','%','&','\n', ' '};
 
         if(word.endsWith(".")){
             String tmp = word.replace(Character.toString('.'), "");
@@ -108,10 +108,12 @@ public class Index {
                 for(String word: newCollection){
                     String string = tokenize(stemmer.Stem(word));
 
+
+                    // disabled stemming
                     // we can add the position check here if its needed eg.:
                     // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
                     if(!string.endsWith("A") && !tokens.contains(string) && !posCheck.isNumber(string)){
-                        String x = stemmer.Stem(string);
+                        String x = (word);
                         tmp.add(x);
 
                         if(!terms.containsKey(x)){
@@ -223,6 +225,10 @@ public class Index {
             }
             collections.add(tmp);
         }
+    }
+
+    void calculateTf_ID(){
+
     }
 
     public Map<String, Word> getTerms (){

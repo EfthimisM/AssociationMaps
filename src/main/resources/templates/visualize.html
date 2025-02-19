@@ -217,7 +217,8 @@
     <p>Creating Taxonomy...</p>
 </div>
 
-<div id="info-panel" style="display: none; position: absolute; background-color: #3498db; border: 1px solid #ccc; padding: 10px; border-radius: 5px; z-index: 1000;">
+<div id="info-panel" style="display: none;
+    position: absolute; background-color: #3498db; border: 1px solid #ccc; padding: 10px; border-radius: 5px; z-index: 1000;">
     <p id="info-content"></p>
 </div>
 
@@ -270,10 +271,11 @@
                         from: edge.from,
                         to: edge.to,
                         confidence: edge.confidence.toFixed(3),
-                        arrows: "to"
+                        support: edge.support,
+                        arrows: "to",
+                        label: graphDt.edges.length <= 10 ? `C = ${edge.confidence.toFixed(3)}\nS = ${edge.support.toFixed(3)}` : ""
                     }))
                 );
-
                 const container = document.getElementById("network-container");
 
                 // Remove any previous network visualization
@@ -338,7 +340,6 @@
                         infoContent.innerHTML = `
                             <strong>Node Info:</strong><br>
                             ID: ${nodeData.id}<br>
-                            Label: ${nodeData.label}<br>
                             Level: ${nodeData.level}
                         `;
                         // Show the panel near the clicked position
@@ -351,7 +352,8 @@
                             <strong>Edge Info:</strong><br>
                             From: ${edgeData.from}<br>
                             To: ${edgeData.to}<br>
-                            Confidence: ${edgeData.confidence}
+                            Confidence: ${edgeData.confidence} <br>
+                            Support:  ${edgeData.support}
                         `;
                         // Show the panel near the clicked position
                         showPanel(params.pointer.DOM);

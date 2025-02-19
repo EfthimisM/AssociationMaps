@@ -8,7 +8,7 @@ public class Node {
 
     private int level;
     private String value;
-    private Map<Node, Double> children;
+    private Map<Node, List<Double>> children;
 
     private List<Node> parents;
 
@@ -22,8 +22,11 @@ public class Node {
         parents = new ArrayList<>();
     }
 
-    public void addChild(Node node, Double confidence){
-        children.put(node, confidence);
+    public void addChild(Node node, Double confidence, Double support){
+        List<Double> metrics = new ArrayList<>();
+        metrics.add(confidence);
+        metrics.add(support);
+        children.put(node, metrics);
     }
 
     public void addParent(Node node){
@@ -42,7 +45,7 @@ public class Node {
         return terms;
     }
 
-    public Map<Node, Double> getchildren() {
+    public Map<Node, List<Double>> getchildren() {
         return children;
     }
 
