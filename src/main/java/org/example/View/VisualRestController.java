@@ -47,6 +47,8 @@ public class VisualRestController {
 
             fileWriter.write("- START APRIORI ALGORITHM\n");
             index.setTHRESHOLD(support, phrase_length);
+            // try with top scored terms
+            //Map<String, Word> subSets = index.Findsubsets(index.getTopTerms(), 2, i);
             Map<String, Word> subSets = index.Findsubsets(index.getTerms(), 2, i);
             long endTime = System.currentTimeMillis();
             fileWriter.write("- END APRIORI ALGORITHM\n");
@@ -231,7 +233,7 @@ public class VisualRestController {
             output.write("- INPUT DONE FOR: " + I + " DOCUMENTS \n");
             output.write(" TOTAL TIME: " +(long) (stopTime - startTime) + " SECONDS \n");
 
-
+            index.calculateTf_ID();
             index.setTHRESHOLD(support, phrase_length);
             output.write(" FOUND " + index.getTerms().size() + " UNIQUE TERMS\n START APRIORI ALGORITHM\n ");
             output.close();

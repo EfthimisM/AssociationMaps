@@ -5,6 +5,8 @@ import mitos.stemmer.Stemmer;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
+
 public class Index {
 
     private Map<String, Word> terms;
@@ -15,27 +17,22 @@ public class Index {
     private static HashSet<String> vocabulary;
     static Stemmer stemmer;
 
+    private Map<String, Word> topTerms;
     private static POSCheck posCheck;
 
     public static String tokenize(String word) {
-        char[] punctuation = { ',', '?', '!', ';', ':', '\'', '\"', ')', ']', '}', '(', '[', '{', '<', '>', '/',
-                '\\', '=', '+', '*', '~', '\t','|','^','_','#','$','%','&','\n', ' '};
+        // Define a regex pattern to match all unwanted characters
+        String regex = "[^a-zA-Z0-9]"; // Matches any character that is NOT a letter or digit
 
-        if(word.endsWith(".")){
-            String tmp = word.replace(Character.toString('.'), "");
-            word = tokenize(tmp);
-        }
+        // Remove all unwanted characters using regex
+        word = word.replaceAll(regex, "");
 
-        for (char p : punctuation) {
-            if (word.indexOf(p) != -1) {
-                String tmp = word.replace(Character.toString(p), "");
-                word = tokenize(tmp);
-            }
-        }
-        if(word.isEmpty()){
+        // Handle empty strings (return "A" as a placeholder)
+        if (word.isEmpty()) {
             return "A";
         }
-        return word;
+
+        return word.toLowerCase(); // Optionally convert to lowercase
     }
 
     public double getAvgSupport(){
@@ -108,12 +105,10 @@ public class Index {
                 for(String word: newCollection){
                     String string = tokenize(stemmer.Stem(word));
 
-
-                    // disabled stemming
                     // we can add the position check here if its needed eg.:
                     // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
                     if(!string.endsWith("A") && !tokens.contains(string) && !posCheck.isNumber(string)){
-                        String x = (word);
+                        String x = stemmer.Stem(string);
                         tmp.add(x);
 
                         if(!terms.containsKey(x)){
@@ -227,9 +222,39 @@ public class Index {
         }
     }
 
-    void calculateTf_ID(){
+    public void calculateTf_ID(){
+        for( Map.Entry<String, Word> entry : terms.entrySet()){
+            double tf = 0 ;
+            double idf = 0;
+            for(Map.Entry<Integer, Integer> frequencies : entry.getValue().getFrequencies().entrySet()){
+                tf += frequencies.getValue();
+            }
+            int N = collections.size();
+            int DF = entry.getValue().getTotalFreq();
 
+            idf = Math.log((double) N / DF);
+            double TF_IDF = tf * idf;
+            entry.getValue().setTf_idf(TF_IDF);
+        }
+        topTerms = new HashMap<>();
+        storeTopTerms(100);
     }
+
+    public void storeTopTerms(int topX) {
+        // Sort terms by TF-IDF score in descending order
+        List<Map.Entry<String, Word>> sortedTerms = terms.entrySet()
+                .stream()
+                .sorted((entry1, entry2) -> Double.compare(entry2.getValue().getTf_idf(), entry1.getValue().getTf_idf()))
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < Math.min(topX, sortedTerms.size()); i++) {
+            String term = sortedTerms.get(i).getKey();
+            topTerms.put(term, sortedTerms.get(i).getValue());
+        }
+    }
+
+
+    public Map<String, Word> getTopTerms(){ return topTerms;}
 
     public Map<String, Word> getTerms (){
         return terms;

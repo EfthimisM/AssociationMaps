@@ -12,6 +12,9 @@ public class Word {
     private List<String> values;
     private Map<Integer, Integer> frequencies;
 
+    private double tf_idf;
+
+
     public Word(List<String> vls){
         this.totalFreq = 0;
         frequencies = new HashMap<>();
@@ -75,5 +78,11 @@ public class Word {
         return getAllSubsets(values);
     }
 
+    public double getTf_idf() {
+        return tf_idf;
+    }
 
+    public void setTf_idf(double tf_idf) {
+        this.tf_idf = tf_idf;
+    }
 }
