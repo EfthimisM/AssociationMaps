@@ -25,6 +25,7 @@ public class VisualRestController {
     private static double confidence;
     private static int phrase_length = 0;
     private static HashMap<String,Rule> rules;
+    private static int k = 0;
 
     private static Index index;
 
@@ -98,8 +99,8 @@ public class VisualRestController {
                 }
 
 
-                // Add a threshold to the maximum number of rules we can return
-                if(rules.size() > 10000){
+                // Add a threshold to the maximum number of rules we can return just to avoid hairball
+                if(rules.size() > 2000){
                     System.out.println("TOO MANY RULES");
                     return;
                 }
@@ -121,17 +122,27 @@ public class VisualRestController {
     private static void setLevels(){
 
         int max = 0;
-        for(Node node : nodes.values()){
-            node.setLevel(10,5);
-            if(max < node.getLevel()){
-                max = node.getLevel();
+        // create a vocabulary with all the terms
+        try{
+            FileWriter fileWriter = new FileWriter("Vocabulary.txt");
+            for(Node node : nodes.values()){
+                fileWriter.write(node.getValue() + "\n");
+                node.setLevel(10,5);
+                if(max < node.getLevel()){
+                    max = node.getLevel();
+                }
             }
+            fileWriter.close();
+
+        }catch (Exception e){
+
         }
+
 
         if(max == 0){
             return;
         }
-        // todo: normalize the values
+
         List<Integer> uniqueLevels = new ArrayList<>();
         int size = nodes.size();
         for(Node node : nodes.values()){
@@ -157,10 +168,13 @@ public class VisualRestController {
 
 
     }
+
+
     private static void initFrame(){
         nodes = new HashMap<>();
+
         for(Map.Entry<String, Rule>entry : rules.entrySet()){
-            System.out.println(entry.getValue().getList() + "->" + entry.getValue().getOpposite() + "=" + entry.getValue().getConfidence());
+            //System.out.println(entry.getValue().getList() + "->" + entry.getValue().getOpposite() + "=" + entry.getValue().getConfidence());
             for(String A : entry.getValue().getList()) {
                 Node tmp;
                 if (!nodes.containsKey(A)) {
@@ -182,7 +196,7 @@ public class VisualRestController {
                         tmp2 = nodes.get(B);
                     }
                     tmp2.addParent(tmp);
-                    tmp.addChild(tmp2, entry.getValue().getConfidence(), entry.getValue().getSupport());
+                    tmp.addChild(tmp2, entry.getValue().getConfidence(), entry.getValue().getSupport()/I);
                 }
             }
 

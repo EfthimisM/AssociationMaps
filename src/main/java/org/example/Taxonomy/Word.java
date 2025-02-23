@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Word {
 
-    int support;
+    private double support;
     private int totalFreq;
     private List<String> values;
     private Map<Integer, Integer> frequencies;
@@ -84,5 +84,9 @@ public class Word {
 
     public void setTf_idf(double tf_idf) {
         this.tf_idf = tf_idf;
+    }
+
+    public double getSupport() {
+        return support;
     }
 }

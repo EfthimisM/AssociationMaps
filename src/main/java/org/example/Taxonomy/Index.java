@@ -14,7 +14,7 @@ public class Index {
     private double THRESHOLD = 0;
     private List<HashSet<String>> collections;
     private static HashSet<String> tokens;
-    private static HashSet<String> vocabulary;
+    //private static HashSet<String> vocabulary;
     static Stemmer stemmer;
 
     private Map<String, Word> topTerms;
@@ -65,7 +65,8 @@ public class Index {
             while ((line = br.readLine()) != null) {
                 String[] lineWords = line.split("\\s+"); // split line by whitespace
                 for (String word : lineWords) {
-                    stp.add(tokenize(stemmer.Stem(word)));
+//                    stp.add(tokenize(stemmer.Stem(word)));
+                    stp.add(tokenize(word));
                 }
             }
         }catch(IOException e) {
@@ -73,149 +74,75 @@ public class Index {
         }
         tokens = stp;
 
-        stp = new HashSet<>();
-        // Read vocabulary file
-        File vocabFile = new File(VocabPath);
-        try (BufferedReader br = new BufferedReader(new FileReader(vocabFile))){
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] lineWords = line.split("\\s+");
-                for (String word : lineWords) {
-                    stp.add(tokenize(stemmer.Stem(word)));
-                }
-            }
-        }catch(IOException e) {
-            e.printStackTrace();
-        }
-        vocabulary = stp;
-
-
     }
 
     public List<HashSet<String>> getCollections (){
         return collections;
     }
+
     public void addCollection(String[] newCollection, int id, int phrase_length){
         HashSet<String> tmp = new HashSet<>();
         this.phrase_length = phrase_length;
         if(phrase_length == 0 || phrase_length == 1){
 
-            // check if we have a specific vocabulary
-            if(vocabulary.isEmpty()){
-                for(String word: newCollection){
-                    String string = tokenize(stemmer.Stem(word));
+            for(String word: newCollection){
+//                String string = tokenize(stemmer.Stem(word));
+                String string = tokenize(word);
 
-                    // we can add the position check here if its needed eg.:
-                    // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
-                    if(!string.endsWith("A") && !tokens.contains(string) && !posCheck.isNumber(string)){
-                        String x = stemmer.Stem(string);
-                        tmp.add(x);
+                // we can add the position check here if its needed eg.:
+                // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
+                if(!string.endsWith("A") && !tokens.contains(string) && posCheck.isNoun(string)){
+//                    String x = stemmer.Stem(string);
+                    String x = (string);
+                    tmp.add(x);
 
-                        if(!terms.containsKey(x)){
-                            List<String> temp = new ArrayList<>();
-                            temp.add(x);
-                            Word term = new Word(temp);
-                            term.addFrequency(id);
-                            this.terms.put(x, term);
-                        }else{
-                            terms.get(x).addFrequency(id);
-                        }
-
-
+                    if(!terms.containsKey(x)){
+                        List<String> temp = new ArrayList<>();
+                        temp.add(x);
+                        Word term = new Word(temp);
+                        term.addFrequency(id);
+                        this.terms.put(x, term);
+                    }else{
+                        terms.get(x).addFrequency(id);
                     }
-                }
-            }else{
-                for(String word: newCollection){
-                    String string = tokenize(stemmer.Stem(word));
-
-                    // we can add the position check here if its needed eg.:
-                    // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
-                    if(!string.endsWith("A") && !tokens.contains(string) && vocabulary.contains(string)){
-                        String x = stemmer.Stem(string);
-                        tmp.add(x);
-
-                        if(!terms.containsKey(x)){
-                            List<String> temp = new ArrayList<>();
-                            temp.add(x);
-                            Word term = new Word(temp);
-                            term.addFrequency(id);
-                            this.terms.put(x, term);
-                        }else{
-                            terms.get(x).addFrequency(id);
-                        }
 
 
-                    }
                 }
             }
+
 
             collections.add(tmp);
         }else{
 
-            // check if we have a specific vocabulary
-            if(vocabulary.isEmpty()){
-                for(int i =0; i < newCollection.length; i ++){
-                    String word = new String("");
-                    int k = 0;
-                    for(int j = 0; j < phrase_length ; j++){
-                        if(j+i+k < newCollection.length) {
-                            String string = tokenize(stemmer.Stem(newCollection[j + i + k]));
+            for(int i =0; i < newCollection.length; i ++){
+                String word = new String("");
+                int k = 0;
+                for(int j = 0; j < phrase_length ; j++){
+                    if(j+i+k < newCollection.length) {
+                        String string = tokenize(stemmer.Stem(newCollection[j + i + k]));
 
-                            // we can add the position check here if its needed eg.:
-                            // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
-                            if (!string.endsWith("A") && !tokens.contains(string) ) {
-                                String x = stemmer.Stem(string);
-                                word += x + " ";
-                            } else {
-                                k++;
-                                j--;
+                        // we can add the position check here if its needed eg.:
+                        // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
+                        if (!string.endsWith("A") && !tokens.contains(string) && posCheck.isNoun(string) ) {
+                            String x = stemmer.Stem(string);
+                            word += x + " ";
+                        } else {
+                            k++;
+                            j--;
 
-                            }
                         }
+                    }
 
-                    }
-                    tmp.add(word);
-                    if(!terms.containsKey(word)){
-                        List<String> temp = new ArrayList<>();
-                        temp.add(word);
-                        Word term = new Word(temp);
-                        term.addFrequency(id);
-                        this.terms.put(word, term);
-                    }else{
-                        terms.get(word).addFrequency(id);
-                    }
                 }
-            }else{
-                for(int i =0; i < newCollection.length; i ++){
-                    String word = new String("");
-                    int k = 0;
-                    for(int j = 0; j < phrase_length ; j++){
-                        if(j+i+k < newCollection.length) {
-                            String string = tokenize(stemmer.Stem(newCollection[j + i + k]));
-
-                            // we can add the position check here if its needed eg.:
-                            // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
-                            if (!string.endsWith("A") && !tokens.contains(string) && vocabulary.contains(string) ) {
-                                String x = stemmer.Stem(string);
-                                word += x + " ";
-                            } else {
-                                k++;
-                                j--;
-
-                            }
-                        }
-
-                    }
-                    tmp.add(word);
-                    if(!terms.containsKey(word)){
-                        List<String> temp = new ArrayList<>();
-                        temp.add(word);
-                        Word term = new Word(temp);
-                        term.addFrequency(id);
-                        this.terms.put(word, term);
-                    }else{
-                        terms.get(word).addFrequency(id);
-                    }
+                tmp.add(word);
+                if(!terms.containsKey(word)){
+                    List<String> temp = new ArrayList<>();
+                    temp.add(word);
+                    Word term = new Word(temp);
+                    term.addFrequency(id);
+                    this.terms.put(word, term);
+                }else{
+                    terms.get(word).addFrequency(id);
                 }
             }
             collections.add(tmp);
@@ -237,7 +164,7 @@ public class Index {
             entry.getValue().setTf_idf(TF_IDF);
         }
         topTerms = new HashMap<>();
-        storeTopTerms(100);
+        storeTopTerms(1000);
     }
 
     public void storeTopTerms(int topX) {
@@ -311,7 +238,7 @@ public class Index {
             boolean flag = false;
             for(Map.Entry<String, Word> entry : Subset.entrySet()){
                 entry.getValue().calculateSupport();
-                if(entry.getValue().support >=THRESHOLD && entry.getKey()!=null){
+                if(entry.getValue().getSupport() >=THRESHOLD && entry.getKey()!=null){
                     newSet.put(entry.getKey(),entry.getValue());
                     flag = true;
                 }
