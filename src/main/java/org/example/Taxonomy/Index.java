@@ -57,7 +57,7 @@ public class Index {
         HashSet<String> stp = new HashSet<>();
         terms = new HashMap<>();
         File stopWords = new File("StopWords");
-        stemmer.Initialize();
+        //stemmer.Initialize();
         this.posCheck = new POSCheck();
 
         try (BufferedReader br = new BufferedReader(new FileReader(stopWords))){
@@ -65,8 +65,8 @@ public class Index {
             while ((line = br.readLine()) != null) {
                 String[] lineWords = line.split("\\s+"); // split line by whitespace
                 for (String word : lineWords) {
-//                    stp.add(tokenize(stemmer.Stem(word)));
-                    stp.add(tokenize(word));
+                    //stp.add(tokenize(stemmer.Stem(word)));
+                  stp.add(tokenize(word));
                 }
             }
         }catch(IOException e) {
@@ -86,13 +86,13 @@ public class Index {
         if(phrase_length == 0 || phrase_length == 1){
 
             for(String word: newCollection){
-//                String string = tokenize(stemmer.Stem(word));
-                String string = tokenize(word);
+                //String string = tokenize(stemmer.Stem(word));
+               String string = tokenize(word);
 
                 // we can add the position check here if its needed eg.:
                 // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
-                if(!string.endsWith("A") && !tokens.contains(string) && posCheck.isNoun(string)){
-//                    String x = stemmer.Stem(string);
+                if(!string.endsWith("A") && !tokens.contains(string) && posCheck.isNoun(string) ){
+                    //String x = stemmer.Stem(string);
                     String x = (string);
                     tmp.add(x);
 
@@ -123,7 +123,7 @@ public class Index {
 
                         // we can add the position check here if its needed eg.:
                         // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
-                        if (!string.endsWith("A") && !tokens.contains(string) && posCheck.isNoun(string) ) {
+                        if (!string.endsWith("A") && !tokens.contains(string)  ) {
                             String x = stemmer.Stem(string);
                             word += x + " ";
                         } else {
