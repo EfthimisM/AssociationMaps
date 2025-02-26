@@ -11,7 +11,7 @@ One method to aid the understanding of a document corpus is to construct automat
 This section provides a step-by-step guide on how to install, configure, and use the software.
 
 ### 1. **Prerequisites**
-- **Java Development Kit (JDK)**: Ensure you have JDK 8 or later installed on your system.
+- **Java Development Kit (JDK)**: Ensure you have JDK 22 or later installed on your system.
 - **Maven**: The project uses Maven for dependency management and building. Make sure Maven is installed.
 - **Text Documents**: Prepare the corpus of documents you want to analyze. Supported formats: `.txt` or any plain text format.
 
