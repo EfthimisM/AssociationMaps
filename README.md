@@ -38,3 +38,53 @@ After building the project, you can run the program using the following command:
    ```bash
    mvn spring-boot:run
    ```
+#### 4. Starting the Program
+- The program runs on `localhost:8080`.
+- After starting the program, open any web browser and navigate to:
+  http://localhost:8080/visualize
+
+Copy
+
+---
+
+#### 5. Input Parameters
+On the visualization page, you will need to provide the following inputs:
+
+1. **Folder Path**
+- Enter the full path to a folder on your computer that contains a collection of `.txt` files.
+- Example: `C:\Documents\TextFiles`
+
+2. **Support Threshold**
+- Set the minimum support threshold for the rules displayed in the knowledge map.
+- Support indicates how frequently a rule appears in the dataset.
+- Example: `0.1` (10%) or and absolute value like `10` (it's found in 10 documents)
+
+3. **Confidence Threshold**
+- Set the minimum confidence threshold for the rules displayed in the knowledge map.
+- Confidence indicates the reliability of a rule.
+- Example: `0.7` (70%)
+
+4. **Phrase Length**
+- Specify the number of words each term in the map should contain.
+- Example: `2` (for bigrams like "machine learning")
+
+---
+
+#### 6. Interactive Knowledge Map
+Once the program processes your input, an interactive knowledge map will be displayed. You can interact with the map as follows:
+
+1. **Explore Terms (Nodes)**
+- Click on any term (node) to see its level in the hierarchy and related terms.
+
+2. **Inspect Rules (Edges)**
+- Click on any rule (edge) to view its confidence and support scores.
+
+3. **Update Input and Re-run**
+- You can modify the input parameters (folder path, support, confidence, or phrase length) and re-run the program to generate a new knowledge map.
+
+---
+
+#### 7. Tips for Best Results
+- Ensure the folder contains only `.txt` files with clean, readable text.
+- Start with lower support and confidence thresholds to see more rules, then adjust as needed.
+- Experiment with different phrase lengths to explore different levels of granularity in the terms.
