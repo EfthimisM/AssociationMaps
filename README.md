@@ -22,7 +22,7 @@ This section provides a step-by-step guide on how to install, configure, and use
    ```
 2. Navigate to the project directory:
    ```bash
-   cd your WordtaxonomyV2.2
+   cd WordtaxonomyV2.2
    ```
 3. Build the project using Maven:
    ```bash
