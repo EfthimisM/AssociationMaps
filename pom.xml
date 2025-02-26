@@ -52,22 +52,7 @@
             <version>3.0.0</version>
         </dependency>
 
-        <!-- Local jars -->
-        <dependency>
-            <groupId>com.example</groupId> <!-- Choose a groupId -->
-            <artifactId>jgraphx</artifactId> <!-- Choose an artifactId -->
-            <version>1.0</version> <!-- Dummy version -->
-            <scope>system</scope>
-            <systemPath>${project.basedir}/Libs/jgraphx.jar</systemPath>
-        </dependency>
 
-        <dependency>
-            <groupId>com.example</groupId> <!-- Choose a groupId -->
-            <artifactId>stemmer</artifactId> <!-- Choose an artifactId -->
-            <version>1.0</version> <!-- Dummy version -->
-            <scope>system</scope>
-            <systemPath>${project.basedir}/Libs/Stemmer.jar</systemPath>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
         <dependency>

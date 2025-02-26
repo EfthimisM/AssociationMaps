@@ -1,6 +1,6 @@
 package org.example.Taxonomy;
 
-import mitos.stemmer.Stemmer;
+//import mitos.stemmer.Stemmer;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -14,8 +14,8 @@ public class Index {
     private double THRESHOLD = 0;
     private List<HashSet<String>> collections;
     private static HashSet<String> tokens;
-    //private static HashSet<String> vocabulary;
-    static Stemmer stemmer;
+    // private static HashSet<String> vocabulary;
+    // static Stemmer stemmer;
 
     private Map<String, Word> topTerms;
     private static POSCheck posCheck;
@@ -119,12 +119,12 @@ public class Index {
                 int k = 0;
                 for(int j = 0; j < phrase_length ; j++){
                     if(j+i+k < newCollection.length) {
-                        String string = tokenize(stemmer.Stem(newCollection[j + i + k]));
+                        String string = tokenize((newCollection[j + i + k]));
 
                         // we can add the position check here if its needed eg.:
                         // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
                         if (!string.endsWith("A") && !tokens.contains(string)  ) {
-                            String x = stemmer.Stem(string);
+                            String x = (string);
                             word += x + " ";
                         } else {
                             k++;
