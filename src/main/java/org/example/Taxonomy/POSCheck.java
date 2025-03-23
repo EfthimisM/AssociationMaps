@@ -9,6 +9,7 @@ import edu.stanford.nlp.util.CoreMap;
 import java.util.List;
 import java.util.Properties;
 
+// position Check
 public class POSCheck {
 
     private StanfordCoreNLP pipeline;
@@ -42,6 +43,7 @@ public class POSCheck {
     }
 
     // Method to check if a word is a verb
+
     public boolean isVerb(String word) {
         String posTag = getPOSTag(word);
         return posTag != null && (posTag.startsWith("VB"));
