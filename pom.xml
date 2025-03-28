@@ -22,6 +22,7 @@
         <spring-boot.version>3.0.0</spring-boot.version>
     </properties>
 
+
     <dependencies>
 
         <!-- Spring Boot Web dependency for running an embedded server -->
