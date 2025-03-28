@@ -1,4 +1,4 @@
-# Automatic and Interactive Knowledge Map Creation from Documents using Association Rule Mining
+# Automatic and Interactive Association Map Creation from Documents using Association Rule Mining
 
 ## Abstract
 
