@@ -51,6 +51,7 @@ public class Node {
 
     public int getLevel() {return level;}
 
+    // formula to calculate the Level of a Node
     public void setLevel(double Alpha, double Beta) {
         int inDegree = this.parents.size();
         int outDegree = this.children.size();

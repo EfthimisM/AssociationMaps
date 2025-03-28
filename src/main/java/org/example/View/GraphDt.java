@@ -22,11 +22,9 @@ public class GraphDt {
     public List<Edge> getEdges() {
         return edges;
     }
-
     public void addEdge(Edge edge) {
         this.edges.add(edge);
     }
-
     public Map<String, Map<String, Integer>> getNodes() {
         return nodes;
     }

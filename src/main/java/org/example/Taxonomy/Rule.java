@@ -10,6 +10,7 @@ public class Rule {
     private double confidence;
     private double support;
 
+
     public Rule(List<String> l, List<String> op, double con, double sup){
         this.list = l;
         this.opposite = op;

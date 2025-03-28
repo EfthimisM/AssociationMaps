@@ -41,80 +41,52 @@ public class VisualRestController {
     // todo: remove duplicates
     public static void process(int i){
         rules = new HashMap<>();
+        index.setTHRESHOLD(support, phrase_length);
+        Map<String, Word> subSets = index.Findsubsets(index.getTerms(), 2, i);
 
-        try{
-            FileWriter fileWriter = new FileWriter("Metrics.txt", true);
-            long startTime = System.currentTimeMillis();
+        for(Map.Entry<String, Word> entry : subSets.entrySet()){
 
-            fileWriter.write("- START APRIORI ALGORITHM\n");
-            index.setTHRESHOLD(support, phrase_length);
-            // try with top scored terms
-            //Map<String, Word> subSets = index.Findsubsets(index.getTopTerms(), 2, i);
-            Map<String, Word> subSets = index.Findsubsets(index.getTerms(), 2, i);
-            long endTime = System.currentTimeMillis();
-            fileWriter.write("- END APRIORI ALGORITHM\n");
-            fileWriter.write("\t - TOTAL NUMBER OF SUBSETS: " + subSets.size() + "\n");
-            fileWriter.write("\t - TIME: " + (endTime - startTime) + "\n");
-            fileWriter.write("- START RULE EXTRACTION\n");
+            System.out.println("_______________");
+            System.out.println(entry.getKey());
 
-            startTime = System.currentTimeMillis();
+            System.out.println("_______________");
 
-            if(subSets == null){
-                System.err.println("TOO MANY SUBSETS, PLEASE TRY A HIGHER THRESHOLD");
-                return;
-            }
-            for(Map.Entry<String, Word> entry : subSets.entrySet()){
+            List<String> subset = entry.getValue().getValues();
+            for(int k = 0; k< subset.size(); k++){
 
-                System.out.println("_______________");
-                System.out.println(entry.getKey());
+                List<String> first = new ArrayList<>();
+                first.add(subset.get(k));
+                int support1 = index.getSuppoort(first);
 
-                System.out.println("_______________");
+                for(int l = 0; l< subset.size(); l++){
+                    List<String> second = new ArrayList<>();
+                    if(l!=k){
 
-                List<String> subset = entry.getValue().getValues();
-                for(int k = 0; k< subset.size(); k++){
-
-                    List<String> first = new ArrayList<>();
-                    first.add(subset.get(k));
-                    int support1 = index.getSuppoort(first);
-
-                    for(int l = 0; l< subset.size(); l++){
-                        List<String> second = new ArrayList<>();
-                        if(l!=k){
-
-                            second.add(subset.get(l));
-                            second.add(subset.get(k));
-                            int support2 = index.getSuppoort(second);
-                            double conf =  ((double)support2 / (double)support1);
-                            if(conf >= confidence){
-                                second.remove(second.size()-1);
-                                try{
-                                    String key = first.get(0) + second.get(0);
-                                    Rule rule = new Rule(first,second,conf,support2);
-                                    rules.put(key, rule);
-                                    System.out.println("New rule: " + first + " -> " + subset.get(l) + " CONFIDENCE: " + conf);
-                                }catch(Exception e){}
-                            }
+                        second.add(subset.get(l));
+                        second.add(subset.get(k));
+                        int support2 = index.getSuppoort(second);
+                        double conf =  ((double)support2 / (double)support1);
+                        if(conf >= confidence){
+                            second.remove(second.size()-1);
+                            try{
+                                String key = first.get(0) + second.get(0);
+                                Rule rule = new Rule(first,second,conf,support2);
+                                rules.put(key, rule);
+                                System.out.println("New rule: " + first + " -> " + subset.get(l) + " CONFIDENCE: " + conf);
+                            }catch(Exception e){}
                         }
                     }
                 }
-
-
-                // Add a threshold to the maximum number of rules we can return just to avoid hairball
-                if(rules.size() > 2000){
-                    System.out.println("TOO MANY RULES");
-                    return;
-                }
             }
-            endTime = System.currentTimeMillis();
-            fileWriter.write("- END RULE EXTRACTION\n");
-            fileWriter.write("\t - TIME: " + (long) (endTime - startTime) + "\n");
-            fileWriter.write("\t - TOTAL RULES:" + rules.size() + "\n");
-            fileWriter.close();
 
-        }catch(Exception e){
-            e.printStackTrace();
+
+            // Add a threshold to the maximum number of rules we can return just to avoid hairball
+            if(rules.size() > 2000){
+                System.out.println("TOO MANY RULES");
+                // we will only keep a randomly 2000 rules
+                return;
+            }
         }
-
 
     }
 
@@ -122,22 +94,14 @@ public class VisualRestController {
     private static void setLevels(){
 
         int max = 0;
-        // create a vocabulary with all the terms
-        try{
-            FileWriter fileWriter = new FileWriter("Vocabulary.txt");
-            for(Node node : nodes.values()){
-                fileWriter.write(node.getValue() + "\n");
-                node.setLevel(10,5);
-                if(max < node.getLevel()){
-                    max = node.getLevel();
-                }
+
+        // set the level
+        for(Node node : nodes.values()){
+            node.setLevel(10,5);
+            if(max < node.getLevel()){
+                max = node.getLevel();
             }
-            fileWriter.close();
-
-        }catch (Exception e){
-
         }
-
 
         if(max == 0){
             return;
@@ -155,12 +119,13 @@ public class VisualRestController {
             node.setLevel(level_norm);
         }
 
+        // normalize
         uniqueLevels.sort(null);
         List<Integer> newLevels = new ArrayList<>();
         for(int i =0; i< uniqueLevels.size(); i++){
             newLevels.add(i+1);
         }
-        // todo: ditribute correctly
+
         for(Node node: nodes.values()){
             int level2 = uniqueLevels.indexOf(node.getLevel());
             node.setLevel(level2);
@@ -169,12 +134,11 @@ public class VisualRestController {
 
     }
 
-
+    // Create the nodes for each term
     private static void initFrame(){
         nodes = new HashMap<>();
 
         for(Map.Entry<String, Rule>entry : rules.entrySet()){
-            //System.out.println(entry.getValue().getList() + "->" + entry.getValue().getOpposite() + "=" + entry.getValue().getConfidence());
             for(String A : entry.getValue().getList()) {
                 Node tmp;
                 if (!nodes.containsKey(A)) {
@@ -216,15 +180,9 @@ public class VisualRestController {
         System.out.println("Confidence: " + confidence);
         System.out.println("Phrase Length: " + phrase_length);
 
-        // create a file to put all the time metrics
         try {
-            FileWriter output = new FileWriter("Metrics.txt");
-            long startTime = System.currentTimeMillis();
             File file = new File(path);
             int i = 0 ;
-            System.out.println("Tokenizing and Stemming: ");
-            long tokenize = System.currentTimeMillis();
-            output.write("TIMING INPUT & INDEXING & TOKENIZATION & STEMMING\n");
             for (File fileEntry : file.listFiles()) {
                 if (fileEntry.isDirectory()) {
                     System.out.println(fileEntry.getAbsolutePath());
@@ -243,14 +201,9 @@ public class VisualRestController {
 
             I = i;
             System.out.println("DONE FOR: " + I);
-            long stopTime = System.currentTimeMillis();
-            output.write("- INPUT DONE FOR: " + I + " DOCUMENTS \n");
-            output.write(" TOTAL TIME: " +(long) (stopTime - startTime) + " SECONDS \n");
 
             index.calculateTf_ID();
             index.setTHRESHOLD(support, phrase_length);
-            output.write(" FOUND " + index.getTerms().size() + " UNIQUE TERMS\n START APRIORI ALGORITHM\n ");
-            output.close();
 
             process(I);
             initFrame();
@@ -276,12 +229,7 @@ public class VisualRestController {
                 }
             }
 
-            System.out.println("DONE FOR: " + I);
-            FileWriter writer = new FileWriter("Metrics.txt", true);
-            long endTime = System.currentTimeMillis();
-            writer.write("Total time to execute the program: " + (long) (endTime - startTime)/ 1000);
-            writer.close();
-
+            System.out.println("DONE FOR: " + I +" FILES");
         }catch (Exception e){
             e.printStackTrace();
         }

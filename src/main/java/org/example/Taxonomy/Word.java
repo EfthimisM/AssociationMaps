@@ -14,7 +14,6 @@ public class Word {
 
     private double tf_idf;
 
-
     public Word(List<String> vls){
         this.totalFreq = 0;
         frequencies = new HashMap<>();

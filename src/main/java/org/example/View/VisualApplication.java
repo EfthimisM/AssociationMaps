@@ -12,6 +12,7 @@ public class VisualApplication implements CommandLineRunner {
         System.out.println();
     }
 
+
     @Override
     public void run(String[] args) throws Exception {
     }

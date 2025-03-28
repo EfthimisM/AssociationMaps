@@ -14,25 +14,20 @@ public class Index {
     private double THRESHOLD = 0;
     private List<HashSet<String>> collections;
     private static HashSet<String> tokens;
-    // private static HashSet<String> vocabulary;
-    // static Stemmer stemmer;
+
 
     private Map<String, Word> topTerms;
     private static POSCheck posCheck;
 
     public static String tokenize(String word) {
         // Define a regex pattern to match all unwanted characters
-        String regex = "[^a-zA-Z0-9]"; // Matches any character that is NOT a letter or digit
-
-        // Remove all unwanted characters using regex
+        String regex = "[^a-zA-Z0-9]";
         word = word.replaceAll(regex, "");
-
-        // Handle empty strings (return "A" as a placeholder)
         if (word.isEmpty()) {
             return "A";
         }
 
-        return word.toLowerCase(); // Optionally convert to lowercase
+        return word.toLowerCase();
     }
 
     public double getAvgSupport(){
@@ -65,7 +60,6 @@ public class Index {
             while ((line = br.readLine()) != null) {
                 String[] lineWords = line.split("\\s+"); // split line by whitespace
                 for (String word : lineWords) {
-                    //stp.add(tokenize(stemmer.Stem(word)));
                   stp.add(tokenize(word));
                 }
             }

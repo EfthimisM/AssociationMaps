@@ -24,15 +24,12 @@ public class Edge {
     public double getConfidence() {
         return confidence;
     }
-
     public String getFrom() {
         return from;
     }
-
     public String getTo() {
         return to;
     }
-
     public double getSupport() {
         return support;
     }

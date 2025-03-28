@@ -5,7 +5,6 @@ public class ValueRequest {
     private double support;
     private double confidence;
     private int phrase_length;
-
     private String path;
 
     public void setPath(String string){ this.path = string;}
