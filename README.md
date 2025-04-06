@@ -43,8 +43,6 @@ After building the project, you can run the program using the following command:
 - After starting the program, open any web browser and navigate to:
   http://localhost:8080/visualize
 
-Copy
-
 ---
 
 #### 5. Input Parameters
