@@ -174,7 +174,7 @@ public class VisualRestController {
         confidence = request.getConfidence();
         phrase_length = request.getPhrase_length();
         path = request.getPath();
-        index = new Index("null");
+        index = new Index("FaoTerms");
 
         System.out.println("Support: " + support);
         System.out.println("Confidence: " + confidence);

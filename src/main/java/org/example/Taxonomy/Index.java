@@ -15,13 +15,15 @@ public class Index {
     private List<HashSet<String>> collections;
     private static HashSet<String> tokens;
 
+    private static HashSet<String> vocabulary;
+
 
     private Map<String, Word> topTerms;
     private static POSCheck posCheck;
 
     public static String tokenize(String word) {
         // Define a regex pattern to match all unwanted characters
-        String regex = "[^a-zA-Z0-9]";
+        String regex = "[^a-zA-Z0-9-]";
         word = word.replaceAll(regex, "");
         if (word.isEmpty()) {
             return "A";
@@ -52,7 +54,6 @@ public class Index {
         HashSet<String> stp = new HashSet<>();
         terms = new HashMap<>();
         File stopWords = new File("StopWords");
-        //stemmer.Initialize();
         this.posCheck = new POSCheck();
 
         try (BufferedReader br = new BufferedReader(new FileReader(stopWords))){
@@ -68,6 +69,23 @@ public class Index {
         }
         tokens = stp;
 
+        stp = new HashSet<>();
+        vocabulary = new HashSet<>();
+        // Read vocabulary file
+        File vocabFile = new File(VocabPath);
+        try (BufferedReader br = new BufferedReader(new FileReader(vocabFile))){
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] lineWords = line.split("\n");
+                for (String word : lineWords) {
+                    stp.add(word.toLowerCase());
+                }
+            }
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
+        vocabulary = stp;
+
     }
 
     public List<HashSet<String>> getCollections (){
@@ -77,6 +95,53 @@ public class Index {
     public void addCollection(String[] newCollection, int id, int phrase_length){
         HashSet<String> tmp = new HashSet<>();
         this.phrase_length = phrase_length;
+
+        // for the vocabulary
+        if(!vocabulary.isEmpty()){
+            for (int i = 0; i < newCollection.length; i++){
+                String string = tokenize(newCollection[i]);
+                StringBuilder phrase = new StringBuilder(string);
+
+                // single words
+                if (vocabulary.contains(phrase.toString())) {
+                    String x = phrase.toString();
+                    tmp.add(phrase.toString());
+
+                    if(!terms.containsKey(x)){
+                        List<String> temp = new ArrayList<>();
+                        temp.add(x);
+                        Word term = new Word(temp);
+                        term.addFrequency(id);
+                        this.terms.put(x, term);
+                    }else{
+                        terms.get(x).addFrequency(id);
+                    }
+
+                }
+
+                // multi-word terms
+                for (int j = i + 1; j < Math.min(i + 3, newCollection.length); j++) {
+                    phrase.append(" ").append(newCollection[j]);
+                    if (vocabulary.contains(phrase.toString())) {
+                        String x = phrase.toString();
+                        tmp.add(phrase.toString());
+
+                        if(!terms.containsKey(x)){
+                            List<String> temp = new ArrayList<>();
+                            temp.add(x);
+                            Word term = new Word(temp);
+                            term.addFrequency(id);
+                            this.terms.put(x, term);
+                        }else{
+                            terms.get(x).addFrequency(id);
+                        }
+                    }
+                }
+            }
+            collections.add(tmp);
+            return;
+        }
+
         if(phrase_length == 0 || phrase_length == 1){
 
             for(String word: newCollection){
