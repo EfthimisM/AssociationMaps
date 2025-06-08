@@ -272,7 +272,7 @@
                         from: edge.from,
                         to: edge.to,
                         confidence: edge.confidence.toFixed(3),
-                        support: edge.support,
+                        support: edge.support.toFixed(3),
                         arrows: "to",
                         label: graphDt.edges.length <= 10 ? `C = ${edge.confidence.toFixed(3)}\nS = ${edge.support.toFixed(3)}` : ""
                     }))
