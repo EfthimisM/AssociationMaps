@@ -18,11 +18,11 @@ This section provides a step-by-step guide on how to install, configure, and use
 ### 2. **Installation**
 1. Clone the repository:
    ```bash
-   git clone https://github.com/EfthimisM/WordtaxonomyV2.2
+   git clone https://github.com/EfthimisM/AssociationMaps
    ```
 2. Navigate to the project directory:
    ```bash
-   cd WordtaxonomyV2.2
+   cd AssociationMaps
    ```
 3. Build the project using Maven:
    ```bash
@@ -42,8 +42,6 @@ After building the project, you can run the program using the following command:
 - The program runs on `localhost:8080`.
 - After starting the program, open any web browser and navigate to:
   http://localhost:8080/visualize
-
-Copy
 
 ---
 
