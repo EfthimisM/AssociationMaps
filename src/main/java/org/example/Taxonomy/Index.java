@@ -256,14 +256,6 @@ public class Index {
         BigInteger result = binomialCoefficient(depth, tmp.size());
         if(result.compareTo(BigInteger.valueOf((long) 3E6)) > 0){
             System.out.println("TOO MANY SUBSETS STOPPING THE ALGORITHM");
-            try{
-                FileWriter writer = new FileWriter("Metrics.txt", true);
-                writer.write("ENDED PREEPMTIVLY \n");
-                writer.write("MAX DEPTH :" + depth + "\n");
-                writer.close();
-            }catch (Exception e){
-
-            }
             return Subset;
         }
 
@@ -315,13 +307,6 @@ public class Index {
         x.entrySet().removeIf(entry -> entry.getValue().getTotalFreq() < THRESHOLD);
 
         if(x.isEmpty()){
-            try{
-                FileWriter writer = new FileWriter("Metrics.txt", true);
-                writer.write("MAX DEPTH :" + depth + "\n");
-                writer.close();
-            }catch (Exception e){
-
-            }
             System.out.println("MAX DEPTH :" + depth);
             return Subset;
 

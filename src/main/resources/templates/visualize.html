@@ -265,8 +265,16 @@
                     }))
                 );
 
-                
-                // todo: add the support
+                function getColorByValue(value, min = 0, max = 1) {
+                    const normalized = (value - min) / (max - min);
+
+                    const r = Math.floor(255 * (1 - normalized));
+                    const g = 0;
+                    const b = Math.floor(255 * normalized);
+
+                    return `rgb(${r},${g},${b})`;
+                }
+
                 const edges = new vis.DataSet(
                     graphDt.edges.map(edge => ({
                         from: edge.from,
@@ -274,17 +282,16 @@
                         confidence: edge.confidence.toFixed(3),
                         support: edge.support.toFixed(3),
                         arrows: "to",
-                        label: graphDt.edges.length <= 10 ? `C = ${edge.confidence.toFixed(3)}\nS = ${edge.support.toFixed(3)}` : ""
+                        label: graphDt.edges.length <= 10 ? `C = ${edge.confidence.toFixed(3)}\nS = ${edge.support.toFixed(3)}` : "",
+                        color: getColorByValue(edge.confidence)
                     }))
                 );
                 const container = document.getElementById("network-container");
 
-                // Remove any previous network visualization
                 container.innerHTML = "";
 
                 const data = { nodes: nodes, edges: edges };
 
-                // Set network options
                 const options = {
                     layout: {
                         hierarchical: {
@@ -324,7 +331,7 @@
 
 
                     nodes: {
-                        font: { size: 14 } // Default font size
+                        font: { size: 14 }
                     }
                 };
 
@@ -340,7 +347,7 @@
                         // Populate the panel with node information
                         infoContent.innerHTML = `
                             <strong>Node Info:</strong><br>
-                            ID: ${nodeData.id}<br>
+                            ID: ${nodeData.id}<br>   
                             Level: ${nodeData.level}
                         `;
                         // Show the panel near the clicked position
