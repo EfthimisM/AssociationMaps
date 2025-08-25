@@ -85,7 +85,8 @@ public class Index {
 
                 // we can add the position check here if its needed eg.:
                 // posCheck.isAdjective(string) posCheck.isNoun(string) etc.
-                if(!string.endsWith("A") && !tokens.contains(string) && posCheck.isNoun(string) ){
+//                if(!string.endsWith("A") && !tokens.contains(string) && posCheck.isNoun(string) ){
+                if(!string.endsWith("A") && !tokens.contains(string) && !posCheck.isNumber(string) ){
                     //String x = stemmer.Stem(string);
                     String x = (string);
                     tmp.add(x);
