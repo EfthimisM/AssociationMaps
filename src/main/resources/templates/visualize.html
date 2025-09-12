@@ -282,7 +282,7 @@
                         confidence: edge.confidence.toFixed(3),
                         support: edge.support.toFixed(3),
                         arrows: "to",
-                        label: graphDt.edges.length <= 10 ? `C = ${edge.confidence.toFixed(3)}\nS = ${edge.support.toFixed(3)}` : "",
+                        label: graphDt.edges.length <= 20 ? `C = ${edge.confidence.toFixed(3)}\nS = ${edge.support.toFixed(3)}` : "",
                         color: getColorByValue(edge.confidence)
                     }))
                 );
@@ -427,3 +427,4 @@
 
 </body>
 </html>
+
