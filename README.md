@@ -4,19 +4,6 @@ This repository contains the source code and resources for the paper:
 
 > **E. Mitkousis and Y. Tzitzikas**, "Interactive Association Map Creation from Documents using Association Rule Mining", *Proceedings of the 29th International Conference on Theory and Practice of Digital Libraries (TPDL 2025)*, Tampere, Finland, September 2025.
 
-## 📖 Citation
-
-If you use this software, our methodology, or our findings in your research, please cite our paper:
-
-```bibtex
-@inproceedings{mitkousis2025interactive,
-  title     = {Interactive Association Map Creation from Documents using Association Rule Mining},
-  author    = {Mitkousis, Emmanouil and Tzitzikas, Yannis},
-  booktitle = {Proceedings of the 29th International Conference on Theory and Practice of Digital Libraries (TPDL 2025)},
-  month     = {September},
-  year      = {2025},
-  address   = {Tampere, Finland}
-}
 
 ## Abstract
 
