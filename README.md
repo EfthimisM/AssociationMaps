@@ -1,5 +1,23 @@
 # Automatic and Interactive Association Map Creation from Documents using Association Rule Mining
 
+This repository contains the source code and resources for the paper:
+
+> **E. Mitkousis and Y. Tzitzikas**, "Interactive Association Map Creation from Documents using Association Rule Mining", *Proceedings of the 29th International Conference on Theory and Practice of Digital Libraries (TPDL 2025)*, Tampere, Finland, September 2025.
+
+## 📖 Citation
+
+If you use this software, our methodology, or our findings in your research, please cite our paper:
+
+```bibtex
+@inproceedings{mitkousis2025interactive,
+  title     = {Interactive Association Map Creation from Documents using Association Rule Mining},
+  author    = {Mitkousis, Emmanouil and Tzitzikas, Yannis},
+  booktitle = {Proceedings of the 29th International Conference on Theory and Practice of Digital Libraries (TPDL 2025)},
+  month     = {September},
+  year      = {2025},
+  address   = {Tampere, Finland}
+}
+
 ## Abstract
 
 One method to aid the understanding of a document corpus is to construct automatically a knowledge map for that corpus by analyzing the contents of the documents. Several methods have been proposed in the literature for this task. In this paper, we investigate a method for automatic knowledge map construction that is based on **Association Rule Mining (ARM)**. ARM was originally proposed for databases and structured data as a method for data mining, e.g., for market basket analysis. In this work, we explore its application to unstructured text documents.
